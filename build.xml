@@ -1,0 +1,415 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="transactions-essentials" default="all" basedir=".">
+    
+    <property file="build.properties"/>
+    
+    <path id="classpath">
+        <fileset dir="${lib.dir}">
+            <exclude name="*.TXT"/>
+        </fileset>
+        <pathelement location="${build.dir}"/>
+    </path>
+    
+    <target name="clean" description="deletes any remaining temporary build files">
+        <delete dir="${build.dir}" quiet="true"/>
+       
+    </target>
+    
+    <target name="prepare" description="sets up temporary build folders">
+        <mkdir dir="${build.dir}"/>
+        
+    </target>
+    
+    <target name="-check-hibernate">
+        <available property="hibernate2.jar.present" value="true" 
+            classname="net.sf.hibernate.transaction.TransactionManagerLookup" classpathref="classpath"/>
+        <available property="hibernate3.jar.present" value="true" 
+            classname="org.hibernate.transaction.TransactionManagerLookup" classpathref="classpath"/>
+    </target>
+    
+    <target name="-warn-hibernate2" depends="-check-hibernate" unless="hibernate2.jar.present">
+        <echo>NOTE: to include hibernate2 integration during compile, download the hibernate2 jar and put it into the lib folder!</echo>
+    </target>
+    
+    <target name="-warn-hibernate3" depends="-check-hibernate" unless="hibernate3.jar.present">
+        <echo>NOTE: to include hibernate3 integration during compile, download the hibernate3 jar and put it into the lib folder!</echo>
+    </target>
+    
+    <target name="-compile-without-hibernate">
+        <!-- first insert build version number into Configuration.java -->
+        <replaceregexp match="VERSION(\s)*=.*;" replace="VERSION = \&quot;${build.version}\&quot;;"
+            byline="true" file="${sources.dir}/com/atomikos/icatch/system/Configuration.java"/>
+        
+        <echo>Compiling module with DEBUG flag set to: ${debug}</echo>
+        <javac srcdir="${sources.dir}" includes="**/*.java" debug="${debug}" 
+                excludes="com/atomikos/icatch/jta/hibernate/*.java,com/atomikos/icatch/jta/hibernate3/*.java" 
+                destdir="${build.dir}">
+            <classpath refid="classpath"/>
+        </javac>
+    </target>
+    
+    <target name="-compile-hibernate2" depends="-compile-without-hibernate,-warn-hibernate2" if="hibernate2.jar.present">
+        <javac srcdir="${sources.dir}" includes="com/atomikos/icatch/jta/hibernate/*.java" destdir="${build.dir}">
+            <classpath refid="classpath"/>
+        </javac>
+    </target>
+    
+    <target name="-compile-hibernate3" depends="-compile-without-hibernate,-warn-hibernate3" if="hibernate3.jar.present">
+        <javac srcdir="${sources.dir}" includes="com/atomikos/icatch/jta/hibernate3/*.java" destdir="${build.dir}">
+            <classpath refid="classpath"/>
+        </javac>
+    </target>
+    
+    <target name="compile" depends="prepare,-compile-without-hibernate,-compile-hibernate2,-compile-hibernate3" description="compiles the sources">
+        
+    
+    </target>
+    
+    <target name="javadoc" depends="compile" description="(re)generates the javadoc documentation">
+        <javadoc destdir="${javadoc.destination.dir}" packagenames="com.atomikos.*" classpathref="classpath">
+            <link href="http://java.sun.com/j2ee/1.4/docs/api"/>
+            <link href="http://java.sun.com/j2se/1.4.2/docs/api"/>
+            <sourcepath>
+                <pathelement location="${sources.dir}"/>
+            </sourcepath>
+        </javadoc>
+    </target>
+    
+    <target name="sources" description="prepare various folders with the sources of each jar." depends="prepare">
+        <delete dir="${sources-jars.destination.dir}" quiet="true"/>
+        <mkdir dir="${sources-jars.destination.dir}"/>
+        <jar destfile="${sources-jars.destination.dir}/transactions-api-sources.jar">
+            <fileset dir="${sources.dir}">
+                <include name="com/atomikos/datasource/*.java"/>
+                <include name="com/atomikos/icatch/*.java"/>
+                <include name="com/atomikos/icatch/config/*.java"/>
+                <include name="com/atomikos/icatch/admin/*.java"/>
+            </fileset>
+            <manifest>
+                <attribute name="Implementation-Title" value="transactions-api-sources.jar"/>
+                <attribute name="Implementation-Version" value="${build.version}"/>
+                <attribute name="Implementation-Vendor" value="Atomikos"/>
+                <attribute name="Atomikos-Version" value="${build.version}"/>
+            </manifest>
+        </jar>
+        <jar destfile="${sources-jars.destination.dir}/transactions-sources.jar">
+            <fileset dir="${sources.dir}">
+                <include name="com/atomikos/icatch/admin/imp/*.java"/>
+                <include name="com/atomikos/icatch/admin/jmx/*.java"/>
+                <include name="com/atomikos/icatch/config/imp/*.java"/>
+                <include name="com/atomikos/icatch/imp/*.java"/>
+                <include name="com/atomikos/icatch/system/*.java"/>
+                <include name="com/atomikos/persistence/*.java"/>
+                <include name="com/atomikos/persistence/imp/*.java"/>
+                <include name="com/atomikos/icatch/imp/thread/*.java"/> 
+            </fileset>
+            <manifest>
+                <attribute name="Implementation-Title" value="transactions-sources.jar"/>
+                <attribute name="Implementation-Version" value="${build.version}"/>
+                <attribute name="Implementation-Vendor" value="Atomikos"/>
+                <attribute name="Atomikos-Version" value="${build.version}"/>
+            </manifest>
+        </jar>
+        <jar destfile="${sources-jars.destination.dir}/transactions-jta-sources.jar">
+            <fileset dir="${sources.dir}">
+                <include name="com/atomikos/datasource/xa/**/*.java"/>
+                <include name="com/atomikos/datasource/pool/**/*.java"/>
+                <include name="com/atomikos/icatch/jta/*.java"/>
+                <include name="com/atomikos/icatch/standalone/*.java"/>
+            </fileset>
+            <manifest>
+                <attribute name="Implementation-Title" value="transactions-jta-sources.jar"/>
+                <attribute name="Implementation-Version" value="${build.version}"/>
+                <attribute name="Implementation-Vendor" value="Atomikos"/>
+                <attribute name="Atomikos-Version" value="${build.version}"/>
+            </manifest>
+        </jar>
+        <jar destfile="${sources-jars.destination.dir}/transactions-jms-sources.jar">
+            <fileset dir="${sources.dir}">
+                <include name="com/atomikos/jms/**/*.java"/>
+            </fileset>
+            <manifest>
+                <attribute name="Implementation-Title" value="transactions-jms-sources.jar"/>
+                <attribute name="Implementation-Version" value="${build.version}"/>
+                <attribute name="Implementation-Vendor" value="Atomikos"/>
+                <attribute name="Atomikos-Version" value="${build.version}"/>
+            </manifest>
+        </jar>
+        <jar destfile="${sources-jars.destination.dir}/transactions-jdbc-sources.jar">
+            <fileset dir="${sources.dir}">
+                <include name="com/atomikos/jdbc/*.java"/>
+                <include name="com/atomikos/jdbc/nonxa/*.java"/>
+            </fileset>
+            <manifest>
+                <attribute name="Implementation-Title" value="transactions-jdbc-sources.jar"/>
+                <attribute name="Implementation-Version" value="${build.version}"/>
+                <attribute name="Implementation-Vendor" value="Atomikos"/>
+                <attribute name="Atomikos-Version" value="${build.version}"/>
+            </manifest>
+        </jar>
+        <jar destfile="${sources-jars.destination.dir}/atomikos-util-sources.jar">
+            <fileset dir="${sources.dir}">
+                <include name="com/atomikos/beans/*.java"/>
+                <include name="com/atomikos/diagnostics/*.java"/>
+                <include name="com/atomikos/finitestates/*.java"/>
+                <include name="com/atomikos/swing/*.java"/>
+                <include name="com/atomikos/timing/*.java"/>
+                <include name="com/atomikos/util/*.java"/>
+            </fileset>
+            <manifest>
+                <attribute name="Implementation-Title" value="atomikos-util-sources.jar"/>
+                <attribute name="Implementation-Version" value="${build.version}"/>
+                <attribute name="Implementation-Vendor" value="Atomikos"/>
+                <attribute name="Atomikos-Version" value="${build.version}"/>
+            </manifest>
+        </jar>
+        <jar destfile="${sources-jars.destination.dir}/transactions-hibernate2-sources.jar">
+            <fileset dir="${sources.dir}">
+                <include name="com/atomikos/icatch/jta/hibernate/*.java"/>
+            </fileset>
+            <manifest>
+                <attribute name="Implementation-Title" value="transactions-hibernate2-sources.jar"/>
+                <attribute name="Implementation-Version" value="${build.version}"/>
+                <attribute name="Implementation-Vendor" value="Atomikos"/>
+                <attribute name="Atomikos-Version" value="${build.version}"/>
+            </manifest>
+        </jar>
+        <jar destfile="${sources-jars.destination.dir}/transactions-hibernate3-sources.jar">
+            <fileset dir="${sources.dir}">
+                <include name="com/atomikos/icatch/jta/hibernate3/*.java"/>
+            </fileset>
+            <manifest>
+                <attribute name="Implementation-Title" value="transactions-hibernate3-sources.jar"/>
+                <attribute name="Implementation-Version" value="${build.version}"/>
+                <attribute name="Implementation-Vendor" value="Atomikos"/>
+                <attribute name="Atomikos-Version" value="${build.version}"/>
+            </manifest>
+        </jar>
+        
+        <jar jarfile="${sources-jars.destination.dir}/transactions-essentials-all-sources.jar" basedir="${sources.dir}">
+            <manifest>
+                <attribute name="Implementation-Title" value="transactions-essentials-sources.jar"/>
+                <attribute name="Implementation-Version" value="${build.version}"/>
+                <attribute name="Implementation-Vendor" value="Atomikos"/>
+                <attribute name="Atomikos-Version" value="${build.version}"/>
+            </manifest>
+        </jar>
+    </target>
+    
+    <target name="jars" description="(re)generates the jar files">
+        <input
+            message="WARNING: about to overwrite jar files in folder ${jars.destination.dir} - continue?"
+            validargs="y,n" addproperty="jars.overwrite"/>
+        <condition property="do.abort">
+            <equals arg1="n" arg2="${jars.overwrite}"/>
+        </condition>
+        <fail if="do.abort">Build aborted by user.</fail>
+        <antcall target="clean"/>
+        <antcall target="prepare"/>
+        <antcall target="compile"/>
+        <delete dir="${jars.destination.dir}" quiet="true"/>
+        <mkdir dir="${jars.destination.dir}"/>
+        <jar destfile="${jars.destination.dir}/transactions-api.jar">
+            <fileset dir="${build.dir}">
+                <include name="com/atomikos/datasource/*.class"/>
+                <include name="com/atomikos/icatch/*.class"/>
+                <include name="com/atomikos/icatch/config/*.class"/>
+                <include name="com/atomikos/icatch/admin/*.class"/>
+            </fileset>
+            <manifest>
+                <attribute name="Implementation-Title" value="transactions-api.jar"/>
+                <attribute name="Implementation-Version" value="${build.version}"/>
+                <attribute name="Implementation-Vendor" value="Atomikos"/>
+                <attribute name="Atomikos-Version" value="${build.version}"/>
+                
+                <attribute name="Bundle-ManifestVersion" value="2"/>
+                <attribute name="Bundle-Name" value="transactions-api"/>
+                <attribute name="Bundle-SymbolicName" value="com.atomikos.transactions.api"/>
+                <attribute name="Bundle-Version" value="${build.version}"/>
+                <attribute name="Bundle-Vendor" value="Atomikos"/>
+                <attribute name="Export-Package" value="com.atomikos.datasource,com.atomikos.icatch,com.atomikos.icatch.admin,com.atomikos.icatch.config"/>
+                <attribute name="Import-Package" value="com.atomikos.finitestates,com.atomikos.util,javax.transaction;version=&quot;1.1.0&quot;,javax.transaction.xa;version=&quot;1.1.0&quot;"/>
+            </manifest>
+        </jar>
+        <jar destfile="${jars.destination.dir}/transactions.jar">
+            <fileset dir="${build.dir}">
+                <include name="com/atomikos/icatch/admin/imp/*.class"/>
+                <include name="com/atomikos/icatch/admin/jmx/*.class"/>
+                <include name="com/atomikos/icatch/config/imp/*.class"/>
+                <include name="com/atomikos/icatch/imp/*.class"/>
+                <include name="com/atomikos/icatch/system/*.class"/>
+                <include name="com/atomikos/persistence/*.class"/>
+                <include name="com/atomikos/persistence/imp/*.class"/>
+                <include name="com/atomikos/icatch/imp/thread/*.class"/> 
+            </fileset>
+            <manifest>
+                <attribute name="Implementation-Title" value="transactions.jar"/>
+                <attribute name="Implementation-Version" value="${build.version}"/>
+                <attribute name="Implementation-Vendor" value="Atomikos"/>
+                <attribute name="Atomikos-Version" value="${build.version}"/>
+                
+                <attribute name="Bundle-ManifestVersion" value="2"/>
+                <attribute name="Bundle-Name" value="atomikos-transactions"/>
+                <attribute name="Bundle-SymbolicName" value="com.atomikos.transactions"/>
+                <attribute name="Bundle-Version" value="${build.version}"/>
+                <attribute name="Bundle-Vendor" value="Atomikos"/>
+                <attribute name="Export-Package" value="com.atomikos.icatch.admin.imp,com.atomikos.icatch.admin.jmx,com.atomikos.icatch.config.imp,com.atomikos.icatch.imp,com.atomikos.icatch.imp.thread,com.atomikos.icatch.system,com.atomikos.persistence,com.atomikos.persistence.imp"/>
+                <attribute name="Import-Package" value="com.atomikos.datasource,com.atomikos.diagnostics,com.atomikos.finitestates,com.atomikos.icatch,com.atomikos.icatch.admin,com.atomikos.icatch.config,com.atomikos.swing,com.atomikos.timing,com.atomikos.util"/>
+            </manifest>
+        </jar>
+        <jar destfile="${jars.destination.dir}/transactions-jta.jar">
+            <fileset dir="${build.dir}">
+                <include name="com/atomikos/datasource/xa/**/*.class"/>
+                <include name="com/atomikos/datasource/pool/**/*.class"/>
+                <include name="com/atomikos/icatch/jta/*.class"/>
+                <include name="com/atomikos/icatch/standalone/*.class"/>
+            </fileset>
+            <manifest>
+                <attribute name="Implementation-Title" value="transactions-jta.jar"/>
+                <attribute name="Implementation-Version" value="${build.version}"/>
+                <attribute name="Implementation-Vendor" value="Atomikos"/>
+                <attribute name="Atomikos-Version" value="${build.version}"/>
+                
+                <attribute name="Bundle-ManifestVersion" value="2"/>
+                <attribute name="Bundle-Name" value="atomikos-transactions-jta"/>
+                <attribute name="Bundle-SymbolicName" value="com.atomikos.transactions.jta"/>
+                <attribute name="Bundle-Version" value="${build.version}"/>
+                <attribute name="Bundle-Vendor" value="Atomikos"/>
+                <attribute name="Export-Package" value="com.atomikos.datasource.pool,com.atomikos.datasource.xa,com.atomikos.datasource.xa.jca,com.atomikos.datasource.xa.jdbc,com.atomikos.datasource.xa.jms,com.atomikos.datasource.xa.jmx,com.atomikos.datasource.xa.session,com.atomikos.icatch.jta,com.atomikos.icatch.standalone"/>
+                <attribute name="Import-Package" value="com.atomikos.datasource,com.atomikos.diagnostics,com.atomikos.icatch,com.atomikos.icatch.admin,com.atomikos.icatch.admin.imp,
+ com.atomikos.icatch.config,com.atomikos.icatch.config.imp,com.atomikos.icatch.imp,com.atomikos.icatch.imp.thread,com.atomikos.icatch.system,com.atomikos.persistence,com.atomikos.persistence.imp,com.atomikos.timing,com.atomikos.util,javax.jms;version=&quot;1.1.0&quot;;resolution:=optional,javax.management,javax.naming,javax.naming.spi,javax.resource;version=&quot;1.5.0&quot;,javax.resource.spi;version=&quot;1.5.0&quot;,javax.transaction;version=&quot;1.1.0&quot;,javax.transaction.xa;version=&quot;1.1.0&quot;"/>
+            </manifest>
+        </jar>
+        <jar destfile="${jars.destination.dir}/transactions-jms.jar">
+            <fileset dir="${build.dir}">
+                <include name="com/atomikos/jms/**/*.class"/>
+            </fileset>
+            <manifest>
+                <attribute name="Implementation-Title" value="transactions-jms.jar"/>
+                <attribute name="Implementation-Version" value="${build.version}"/>
+                <attribute name="Implementation-Vendor" value="Atomikos"/>
+                <attribute name="Atomikos-Version" value="${build.version}"/>
+                
+                <attribute name="Bundle-ManifestVersion" value="2"/>
+                <attribute name="Bundle-Name" value="atomikos-transactions-jms"/>
+                <attribute name="Bundle-SymbolicName" value="com.atomikos.transactions.jms"/>
+                <attribute name="Bundle-Version" value="${build.version}"/>
+                <attribute name="Bundle-Vendor" value="Atomikos"/>
+                <attribute name="Export-Package" value="com.atomikos.jms,com.atomikos.jms.extra"/>
+                <attribute name="Import-Package" value="com.atomikos.beans,com.atomikos.datasource,com.atomikos.datasource.pool,com.atomikos.datasource.xa,com.atomikos.datasource.xa.jms,com.atomikos.datasource.xa.session,com.atomikos.icatch,com.atomikos.icatch.jta,com.atomikos.icatch.system,com.atomikos.util,javax.jms,javax.transaction;version=&quot;1.1.0&quot;,javax.transaction.xa;version=&quot;1.1.0&quot;"/>
+                
+            </manifest>
+        </jar>
+        <jar destfile="${jars.destination.dir}/transactions-jdbc.jar">
+            <fileset dir="${build.dir}">
+                <include name="com/atomikos/jdbc/*.class"/>
+                <include name="com/atomikos/jdbc/nonxa/*.class"/>
+            </fileset>
+            <manifest>
+                <attribute name="Implementation-Title" value="transactions-jdbc.jar"/>
+                <attribute name="Implementation-Version" value="${build.version}"/>
+                <attribute name="Implementation-Vendor" value="Atomikos"/>
+                <attribute name="Atomikos-Version" value="${build.version}"/>
+                
+                <attribute name="Bundle-ManifestVersion" value="2"/>
+                <attribute name="Bundle-Name" value="atomikos-transactions-jdbc"/>
+                <attribute name="Bundle-SymbolicName" value="com.atomikos.transactions.jdbc"/>
+                <attribute name="Bundle-Version" value="${build.version}"/>
+                <attribute name="Bundle-Vendor" value="Atomikos"/>
+                <attribute name="Export-Package" value="com.atomikos.jdbc,com.atomikos.jdbc.nonxa"/>
+                <attribute name="Import-Package" value="com.atomikos.beans,com.atomikos.datasource,com.atomikos.datasource.pool,com.atomikos.datasource.xa,com.atomikos.datasource.xa.jdbc,
+ com.atomikos.datasource.xa.session,com.atomikos.icatch,com.atomikos.icatch.jta,com.atomikos.icatch.system,com.atomikos.util"/>
+
+            </manifest>
+        </jar>
+        <jar destfile="${jars.destination.dir}/atomikos-util.jar">
+            <fileset dir="${build.dir}">
+                <include name="com/atomikos/beans/*.class"/>
+                <include name="com/atomikos/diagnostics/*.class"/>
+                <include name="com/atomikos/finitestates/*.class"/>
+                <include name="com/atomikos/swing/*.class"/>
+                <include name="com/atomikos/timing/*.class"/>
+                <include name="com/atomikos/util/*.class"/>
+            </fileset>
+            <manifest>
+                <attribute name="Implementation-Title" value="atomikos-util.jar"/>
+                <attribute name="Implementation-Version" value="${build.version}"/>
+                <attribute name="Implementation-Vendor" value="Atomikos"/>
+                <attribute name="Atomikos-Version" value="${build.version}"/>
+                
+                <attribute name="Bundle-ManifestVersion" value="2"/>
+                <attribute name="Bundle-Name" value="atomikos-util"/>
+                <attribute name="Bundle-SymbolicName" value="com.atomikos.util"/>
+                <attribute name="Bundle-Version" value="${build.version}"/>
+                <attribute name="Bundle-Vendor" value="Atomikos"/>
+                <attribute name="Export-Package" value="com.atomikos.beans,com.atomikos.diagnostics,com.atomikos.finitestates,com.atomikos.swing,com.atomikos.timing,com.atomikos.util"/>
+                <attribute name="Import-Package" value="javax.servlet;version=&quot;2.4.0&quot;;resolution:=optional,javax.servlet.http;version=&quot;2.4.0&quot;;resolution:=optional,org.slf4j;resolution:=optional"/>
+                <!-- if you want to be able to resolve classes that are not in this bundle with Class.getForName then maybe use
+                this extra eclipse-equinox only header: Eclipse-BuddyPolicy: register 
+                my recommendation is a little patch in the ObjectFactory implementations that call Class.forName
+                to support looking into the context classloader.
+                attribute name="Eclipse-BuddyPolicy" value="register" -->
+            </manifest>
+        </jar>
+        <jar destfile="${jars.destination.dir}/transactions-hibernate2.jar">
+            <fileset dir="${build.dir}">
+                <include name="com/atomikos/icatch/jta/hibernate/*.class"/>
+            </fileset>
+            <manifest>
+                <attribute name="Implementation-Title" value="transactions-hibernate2.jar"/>
+                <attribute name="Implementation-Version" value="${build.version}"/>
+                <attribute name="Implementation-Vendor" value="Atomikos"/>
+                <attribute name="Atomikos-Version" value="${build.version}"/>
+            </manifest>
+        </jar>
+        <jar destfile="${jars.destination.dir}/transactions-hibernate3.jar">
+            <fileset dir="${build.dir}">
+                <include name="com/atomikos/icatch/jta/hibernate3/*.class"/>
+            </fileset>
+            <manifest>
+                <attribute name="Implementation-Title" value="transactions-hibernate3.jar"/>
+                <attribute name="Implementation-Version" value="${build.version}"/>
+                <attribute name="Implementation-Vendor" value="Atomikos"/>
+                <attribute name="Atomikos-Version" value="${build.version}"/>
+            </manifest>
+        </jar>
+        
+        <jar jarfile="${jars.destination.dir}/transactions-essentials-all.jar" basedir="${build.dir}">
+            <manifest>
+                <attribute name="Implementation-Title" value="transactions-essentials.jar"/>
+                <attribute name="Implementation-Version" value="${build.version}"/>
+                <attribute name="Implementation-Vendor" value="Atomikos"/>
+                <attribute name="Atomikos-Version" value="${build.version}"/>
+            </manifest>
+        </jar>
+    </target>
+    
+    <target name="test" depends="compile" description="runs all tests [testsuite is licensed separately]">
+        <echo>PLEASE NOTE: TESTS ARE AVAILABLE SEPARATELY - CONTACT sales@atomikos.com</echo>
+        <javac srcdir="${tests.dir}" includes="**/*.java" destdir="${build.dir}">
+            <classpath refid="classpath"/>
+        </javac>
+        <!-- run all tests -->
+        <junit dir="${build.dir}" fork="yes">
+            <formatter type="xml"/>
+            <classpath refid="classpath"/>
+            <batchtest todir="${build.dir}">
+                <fileset dir="${tests.dir}">
+                    <include name="**/*JUnit.java"/>
+                </fileset>
+            </batchtest>
+        </junit>
+        <!-- generate overall test report -->
+        <junitreport todir="${build.dir}">
+            <fileset dir="${build.dir}">
+                <include name="TESTS-*.xml"/>
+                <include name="TEST-*.xml"/>
+            </fileset>
+            <report format="frames" todir="${build.dir}"/>
+        </junitreport>
+    </target>
+    
+    <target name="all" depends="test,jars,javadoc" description="complete (re)build of everything">
+        <antcall target="clean"/>
+    </target>
+</project>
