@@ -3,7 +3,7 @@ atomikos-essentials transaction manager version 3.5.8 repackaged and tweaked for
 
 This is a friendly fork of atomikos-essentials-3.5.8 to work on making the open-source transaction manager support OSGi.
 Here is how this project was created:
-- register on atomkos.com
+- register on http://atomikos.com
 - download the sources.
 - modify the build.xml file found there.
 - call the new target "sources" in the build.xml file of the downloaded atomikos sources.
