@@ -5,11 +5,15 @@ This is a friendly fork of atomikos-essentials-3.5.8 to work on making the open-
 Here is how this project was created:
 - register on http://atomikos.com
 - download the sources.
-- modify the build.xml file found there.
+- modify the build.xml file found there. here it is: http://github.com/hmalphettes/atomikos-essentials-3.5.8-osgified-sandbox/blob/master/build.xml
 - call the new target "sources" in the build.xml file of the downloaded atomikos sources.
 - make a new eclipse PDE plugin project for each one of the *-sources.jar
 - edit the MANIFEST.MF of each of the plugin till it compiles correctly.
-All required external dependencies we imported as OSGi bundles through the PDE.
+- once happy copy the new manifest entries back into the original build.xml
+- edit the version number in build.properties. make sure it is not ending with "-modified-locally" as that prevents eclipse from loading the jars as bundles. use 3.5.8.1 for example
+- regenerate the jars: ant jars
+
+All required external dependencies were imported as OSGi bundles through the PDE.
 They were found on spring's maven repository of OSGi bundles:
 http://www.springsource.com/repository/app/
 
