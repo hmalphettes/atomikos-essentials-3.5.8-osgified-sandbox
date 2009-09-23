@@ -2,16 +2,25 @@ atomikos-essentials transaction manager version 3.5.8 repackaged and tweaked for
 -------------------------------------------------------------------------------------
 
 This is a friendly fork of atomikos-essentials-3.5.8 to work on making the open-source transaction manager support OSGi.
-The sources have been first generated using the goal "sources" of the build.xml file.
-Then a new eclipse PDE plugin project was created for each one of the *-sources.jar
-Then the MANIFEST.MF of each of the plugin was edited to compile correctly.
-All other dependencies we imported as OSGi bundles through the PDE.
+Here is how this project was created:
+- register on atomkos.com
+- download the sources.
+- modify the build.xml file found there.
+- call the new target "sources" in the build.xml file of the downloaded atomikos sources.
+- make a new eclipse PDE plugin project for each one of the *-sources.jar
+- edit the MANIFEST.MF of each of the plugin till it compiles correctly.
+All required external dependencies we imported as OSGi bundles through the PDE.
 They were found on spring's maven repository of OSGi bundles:
 http://www.springsource.com/repository/app/
 
-This a work in progress.
+This a work in progress:
+- the hibernate plugins have not been processed that way yet.
+- the jms bundle has not been tested.
+- in fact this has been tested with one test-case: http://github.com/intalio/hightide-on-osgi/blob/master/org.eclipse.jetty.hightide.testjndi/META-INF/MANIFEST.MF
 
 
-Bug: each MANIFEST.MF has the entry:
+Bug:
+----
+each MANIFEST.MF has the entry:
 "Bundle-ClassPath: bin/,."
 This is a workaround not sure why it was needed for me but it must not be used one the jars are actually built.
