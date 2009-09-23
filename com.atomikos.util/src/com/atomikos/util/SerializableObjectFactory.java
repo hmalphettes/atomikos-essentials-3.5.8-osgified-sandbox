@@ -33,6 +33,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.ObjectStreamClass;
 import java.io.Serializable;
 import java.util.Hashtable;
 
@@ -111,9 +112,24 @@ public class SerializableObjectFactory implements ObjectFactory
         		byte[] bytes = ( byte[] ) ra.getContent();
         		ByteArrayInputStream bin = new ByteArrayInputStream ( bytes );
         		ObjectInputStream in = new ObjectInputStream ( bin );
-        		ret = in.readObject();
-        		in.close();
-        	}
+				ObjectInputStream in = new ObjectInputStream ( bin ) {
+					protected Class<?> resolveClass(ObjectStreamClass desc)
+						throws IOException, ClassNotFoundException
+					{
+						try
+						{
+							return super.resolveClass(desc);
+						}
+						catch (ClassNotFoundException ex)
+						{
+							//try the context classloader then.
+							return Thread.currentThread().getContextClassLoader()
+										.loadClass(desc.getName());
+						}
+					}
+				};
+				in.close();
+			}
         }
         
         return ret;
