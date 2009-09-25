@@ -74,8 +74,8 @@
             </sourcepath>
         </javadoc>
     </target>
-    
-    <target name="sources" description="prepare various folders with the sources of each jar." depends="prepare">
+
+	<target name="sources" description="prepare various folders with the sources of each jar." depends="prepare">
         <delete dir="${sources-jars.destination.dir}" quiet="true"/>
         <mkdir dir="${sources-jars.destination.dir}"/>
         <jar destfile="${sources-jars.destination.dir}/transactions-api-sources.jar">
@@ -90,6 +90,16 @@
                 <attribute name="Implementation-Version" value="${build.version}"/>
                 <attribute name="Implementation-Vendor" value="Atomikos"/>
                 <attribute name="Atomikos-Version" value="${build.version}"/>
+
+                <!-- these entires make an osgi bundle of the sources that eclipse-PDE
+                links to the actual bundle. useful for SDK debugging.
+                doc: http://help.eclipse.org/ganymede/index.jsp?topic=/org.eclipse.pde.doc.user/tasks/pde_individual_source.htm -->
+                <attribute name="Bundle-ManifestVersion" value="2"/>
+                <attribute name="Eclipse-SourceBundle" value="com.atomikos.transactions.api;version=&quot;${build.version}&quot;;roots:=&quot;.&quot;"/>
+                <attribute name="Bundle-Name" value="transactions-api-sources"/>
+                <attribute name="Bundle-SymbolicName" value="com.atomikos.transactions.api.sources"/>
+                <attribute name="Bundle-Version" value="${build.version}"/>
+                <attribute name="Bundle-Vendor" value="Atomikos"/>
             </manifest>
         </jar>
         <jar destfile="${sources-jars.destination.dir}/transactions-sources.jar">
@@ -108,6 +118,13 @@
                 <attribute name="Implementation-Version" value="${build.version}"/>
                 <attribute name="Implementation-Vendor" value="Atomikos"/>
                 <attribute name="Atomikos-Version" value="${build.version}"/>
+
+                <attribute name="Bundle-ManifestVersion" value="2"/>
+                <attribute name="Eclipse-SourceBundle" value="com.atomikos.transactions;version=&quot;${build.version}&quot;;roots:=&quot;.&quot;"/>
+                <attribute name="Bundle-Name" value="transactions-sources"/>
+                <attribute name="Bundle-SymbolicName" value="com.atomikos.transactions.sources"/>
+                <attribute name="Bundle-Version" value="${build.version}"/>
+                <attribute name="Bundle-Vendor" value="Atomikos"/>
             </manifest>
         </jar>
         <jar destfile="${sources-jars.destination.dir}/transactions-jta-sources.jar">
@@ -122,6 +139,13 @@
                 <attribute name="Implementation-Version" value="${build.version}"/>
                 <attribute name="Implementation-Vendor" value="Atomikos"/>
                 <attribute name="Atomikos-Version" value="${build.version}"/>
+
+                <attribute name="Bundle-ManifestVersion" value="2"/>
+                <attribute name="Eclipse-SourceBundle" value="com.atomikos.transactions.jta;version=&quot;${build.version}&quot;;roots:=&quot;.&quot;"/>
+                <attribute name="Bundle-Name" value="transactions-jta-sources"/>
+                <attribute name="Bundle-SymbolicName" value="com.atomikos.transactions.jta.sources"/>
+                <attribute name="Bundle-Version" value="${build.version}"/>
+                <attribute name="Bundle-Vendor" value="Atomikos"/>
             </manifest>
         </jar>
         <jar destfile="${sources-jars.destination.dir}/transactions-jms-sources.jar">
@@ -133,6 +157,13 @@
                 <attribute name="Implementation-Version" value="${build.version}"/>
                 <attribute name="Implementation-Vendor" value="Atomikos"/>
                 <attribute name="Atomikos-Version" value="${build.version}"/>
+
+                <attribute name="Bundle-ManifestVersion" value="2"/>
+                <attribute name="Eclipse-SourceBundle" value="com.atomikos.transactions.jms;version=&quot;${build.version}&quot;;roots:=&quot;.&quot;"/>
+                <attribute name="Bundle-Name" value="transactions-jms-sources"/>
+                <attribute name="Bundle-SymbolicName" value="com.atomikos.transactions.jms.sources"/>
+                <attribute name="Bundle-Version" value="${build.version}"/>
+                <attribute name="Bundle-Vendor" value="Atomikos"/>
             </manifest>
         </jar>
         <jar destfile="${sources-jars.destination.dir}/transactions-jdbc-sources.jar">
@@ -145,6 +176,13 @@
                 <attribute name="Implementation-Version" value="${build.version}"/>
                 <attribute name="Implementation-Vendor" value="Atomikos"/>
                 <attribute name="Atomikos-Version" value="${build.version}"/>
+
+                <attribute name="Bundle-ManifestVersion" value="2"/>
+                <attribute name="Eclipse-SourceBundle" value="com.atomikos.transactions.jdbc;version=&quot;${build.version}&quot;;roots:=&quot;.&quot;"/>
+                <attribute name="Bundle-Name" value="transactions-jdbc-sources"/>
+                <attribute name="Bundle-SymbolicName" value="com.atomikos.transactions.jdbc.sources"/>
+                <attribute name="Bundle-Version" value="${build.version}"/>
+                <attribute name="Bundle-Vendor" value="Atomikos"/>
             </manifest>
         </jar>
         <jar destfile="${sources-jars.destination.dir}/atomikos-util-sources.jar">
@@ -161,6 +199,13 @@
                 <attribute name="Implementation-Version" value="${build.version}"/>
                 <attribute name="Implementation-Vendor" value="Atomikos"/>
                 <attribute name="Atomikos-Version" value="${build.version}"/>
+
+                <attribute name="Bundle-ManifestVersion" value="2"/>
+                <attribute name="Eclipse-SourceBundle" value="com.atomikos.util;version=&quot;${build.version}&quot;;roots:=&quot;.&quot;"/>
+                <attribute name="Bundle-Name" value="atomikos-util-sources"/>
+                <attribute name="Bundle-SymbolicName" value="com.atomikos.util.sources"/>
+                <attribute name="Bundle-Version" value="${build.version}"/>
+                <attribute name="Bundle-Vendor" value="Atomikos"/>
             </manifest>
         </jar>
         <jar destfile="${sources-jars.destination.dir}/transactions-hibernate2-sources.jar">
@@ -172,6 +217,13 @@
                 <attribute name="Implementation-Version" value="${build.version}"/>
                 <attribute name="Implementation-Vendor" value="Atomikos"/>
                 <attribute name="Atomikos-Version" value="${build.version}"/>
+
+                <attribute name="Bundle-ManifestVersion" value="2"/>
+                <attribute name="Eclipse-SourceBundle" value="com.atomikos.transactions.hibernate2;version=&quot;${build.version}&quot;;roots:=&quot;.&quot;"/>
+                <attribute name="Bundle-Name" value="transactions-hibernate2-sources"/>
+                <attribute name="Bundle-SymbolicName" value="com.atomikos.transactions.hibernate2.sources"/>
+                <attribute name="Bundle-Version" value="${build.version}"/>
+                <attribute name="Bundle-Vendor" value="Atomikos"/>
             </manifest>
         </jar>
         <jar destfile="${sources-jars.destination.dir}/transactions-hibernate3-sources.jar">
@@ -183,6 +235,13 @@
                 <attribute name="Implementation-Version" value="${build.version}"/>
                 <attribute name="Implementation-Vendor" value="Atomikos"/>
                 <attribute name="Atomikos-Version" value="${build.version}"/>
+
+                <attribute name="Bundle-ManifestVersion" value="2"/>
+                <attribute name="Eclipse-SourceBundle" value="com.atomikos.transactions.hibernate3;version=&quot;${build.version}&quot;;roots:=&quot;.&quot;"/>
+                <attribute name="Bundle-Name" value="transactions-hibernate3-sources"/>
+                <attribute name="Bundle-SymbolicName" value="com.atomikos.transactions.hibernate3.sources"/>
+                <attribute name="Bundle-Version" value="${build.version}"/>
+                <attribute name="Bundle-Vendor" value="Atomikos"/>
             </manifest>
         </jar>
         
@@ -192,6 +251,13 @@
                 <attribute name="Implementation-Version" value="${build.version}"/>
                 <attribute name="Implementation-Vendor" value="Atomikos"/>
                 <attribute name="Atomikos-Version" value="${build.version}"/>
+<!--  a priori better to keep the bundles separated and modular... price to pay is the context-classloader only hopefully.
+                <attribute name="Bundle-ManifestVersion" value="2"/>
+                <attribute name="Eclipse-SourceBundle" value="com.atomikos.transactions.essentials;version=&quot;${build.version}&quot;;roots:=&quot;.&quot;"/>
+                <attribute name="Bundle-Name" value="transactions-essentials-all-sources"/>
+                <attribute name="Bundle-SymbolicName" value="com.atomikos.transactions.essentials.sources"/>
+                <attribute name="Bundle-Version" value="${build.version}"/>
+                <attribute name="Bundle-Vendor" value="Atomikos"/> -->
             </manifest>
         </jar>
     </target>
@@ -360,6 +426,13 @@
                 <attribute name="Implementation-Version" value="${build.version}"/>
                 <attribute name="Implementation-Vendor" value="Atomikos"/>
                 <attribute name="Atomikos-Version" value="${build.version}"/>
+
+                <attribute name="Bundle-ManifestVersion" value="2"/>
+                <attribute name="Bundle-Name" value="atomikos-transactions-hibernate2"/>
+                <attribute name="Bundle-SymbolicName" value="com.atomikos.transactions.hibernate2"/>
+                <attribute name="Bundle-Version" value="${build.version}"/>
+                <attribute name="Bundle-Vendor" value="Atomikos"/>
+                <!-- TODO Export / Import -->
             </manifest>
         </jar>
         <jar destfile="${jars.destination.dir}/transactions-hibernate3.jar">
@@ -371,6 +444,13 @@
                 <attribute name="Implementation-Version" value="${build.version}"/>
                 <attribute name="Implementation-Vendor" value="Atomikos"/>
                 <attribute name="Atomikos-Version" value="${build.version}"/>
+
+                <attribute name="Bundle-ManifestVersion" value="2"/>
+                <attribute name="Bundle-Name" value="atomikos-transactions-hibernate3"/>
+                <attribute name="Bundle-SymbolicName" value="com.atomikos.transactions.hibernate3"/>
+                <attribute name="Bundle-Version" value="${build.version}"/>
+                <attribute name="Bundle-Vendor" value="Atomikos"/>
+                <!-- TODO Export / Import -->
             </manifest>
         </jar>
         
@@ -380,6 +460,14 @@
                 <attribute name="Implementation-Version" value="${build.version}"/>
                 <attribute name="Implementation-Vendor" value="Atomikos"/>
                 <attribute name="Atomikos-Version" value="${build.version}"/>
+<!--  a priori better to keep the bundles separated and modular... price to pay is the context-classloader only hopefully.
+                <attribute name="Bundle-ManifestVersion" value="2"/>
+                <attribute name="Eclipse-SourceBundle" value="com.atomikos.transactions.essentials;version=&quot;${build.version}&quot;;roots:=&quot;.&quot;"/>
+                <attribute name="Bundle-Name" value="transactions-essentials-all"/>
+                <attribute name="Bundle-SymbolicName" value="com.atomikos.transactions.sources"/>
+                <attribute name="Bundle-Version" value="${build.version}"/>
+                <attribute name="Bundle-Vendor" value="Atomikos"/>
+                TODO Export / Import-->     
             </manifest>
         </jar>
     </target>
